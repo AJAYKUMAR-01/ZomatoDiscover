@@ -1,48 +1,146 @@
+let currentPage = 1; // Default to page 1
+const totalPages = 100;
 
+document.addEventListener("DOMContentLoaded", () => {
+  const storedPage = localStorage.getItem("currentPage");
+  if (storedPage) {
+    currentPage = parseInt(storedPage);
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetch('/api/restaurants')
-        .then(response => response.json())
-        .then(data => {
-            const restaurantList = document.getElementById('restaurant-list');
+  const urlParams = new URLSearchParams(window.location.search);
+  const restaurantId = urlParams.get("id");
 
-            
-            if (!data || !Array.isArray(data)) {
-                console.error('Error: Invalid data format received from API');
-                return;
-            }
-
-            
-            data.forEach(restaurant => {
-                const restaurantItem = document.createElement('div');
-                restaurantItem.classList.add('restaurant-item');
-                restaurantItem.innerHTML = `<a href="/api/restaurants/${restaurant.id}">${restaurant.name}</a>`;
-                restaurantList.appendChild(restaurantItem);
-            });
-        })
-        .catch(error => console.error('Error fetching restaurant list:', error));
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const restaurantId = urlParams.get('id'); 
+  if (restaurantId) {
     fetch(`/api/restaurants/${restaurantId}`)
-        .then(response => response.json())
-        .then(data => {
-            const restaurantDetails = document.getElementById('restaurant-details');
-            const ratingText = data.user_rating ? data.user_rating.rating_text : 'Not Rated';
-            const aggregateRating = data.user_rating ? data.user_rating.aggregate_rating : 'N/A';
-            restaurantDetails.innerHTML = `
-                <h2>${data.name}</h2>
-                <p><strong>Cuisines:</strong> ${data.cuisines}</p>
-                <p><strong>Rating:</strong> ${data.user_rating.rating_text} (${data.user_rating.aggregate_rating})</p>
-                <p><strong>Votes:</strong> ${data.user_rating.votes}</p>
-                <img src="${data.featured_image}" alt="Restaurant Image" style="max-width: 300px;">
-                <p><a href="${data.url}" target="_blank">View on Zomato</a></p>
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const restaurantDetails = document.getElementById("restaurant-details");
+        if (!data || !data.name) {
+          restaurantDetails.innerHTML = "<p>Restaurant not found.</p>";
+          return;
+        }
+        const ratingText = data.user_rating
+          ? data.user_rating.rating_text
+          : "Not Rated";
+        const aggregateRating = data.user_rating
+          ? data.user_rating.aggregate_rating
+          : "N/A";
+
+        restaurantDetails.innerHTML = `
+        <div class="restaurant-detail">
+        <div class="restaurant-image">
+            <img src="${data.featured_image}" alt="Restaurant Image">
+        </div>
+        <div class="restaurant-info">
+            <h1>${data.name}</h1>
+            <p><strong>Cuisines:</strong> ${data.cuisines}</p>
+            <p><strong>Rating:</strong> ${ratingText} (${aggregateRating})</p>
+            <p><strong>Votes:</strong> ${
+              data.user_rating ? data.user_rating.votes : "N/A"
+            }</p>
+            <div class="view-zomato">
+            <p><a href="${
+              data.url
+            }" target="_blank"><button>View on Zomato</button></a></p>
+        </div>
+        </div>        
+        </div>
             `;
-        })
-        .catch(error => console.error('Error fetching restaurant details:', error));
+      })
+      .catch((error) => {
+        console.error("Error fetching restaurant details:", error);
+        const restaurantDetails = document.getElementById("restaurant-details");
+        restaurantDetails.innerHTML =
+          "<p>Error fetching restaurant details.</p>";
+      });
+  }
+
+  renderData();
 });
 
+function renderData() {
+  fetch(`/api/restaurants/?page=${currentPage}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const restaurantList = document.getElementById("restaurant-list");
+      restaurantList.innerHTML = "";
 
+      if (!data || !Array.isArray(data)) {
+        console.error("Error: Invalid data format received from API");
+        return;
+      }
+
+      data.forEach((restaurant) => {
+        const restaurantItem = document.createElement("div");
+        restaurantItem.classList.add("restaurant-card");
+        restaurantItem.innerHTML = `
+                    <div class="card-image">
+                        <img src="${restaurant.featured_image}" alt="Restaurant Image">
+                    </div>
+                    <div class="card-details">
+                        <h1>${restaurant.name}</h1>
+                        <p>Rating: ${restaurant.user_rating}</p>
+                        <p>Cuisines: ${restaurant.cuisines}</p>
+                        <a href="/details/?id=${restaurant.id}"><button>View Details</button></a>
+                    </div>
+                `;
+        restaurantList.appendChild(restaurantItem);
+      });
+
+      renderPagination();
+    })
+    .catch((error) => console.error("Error fetching restaurant list:", error));
+}
+
+function renderPagination() {
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+
+  const maxPagesToShow = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+  let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+  if (endPage - startPage < maxPagesToShow - 1) {
+    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+  }
+
+  if (currentPage > 1) {
+    const prevButton = document.createElement("button");
+    prevButton.innerText = "Previous";
+    prevButton.onclick = () => changePage(currentPage - 1);
+    pagination.appendChild(prevButton);
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.innerText = i;
+    if (i === currentPage) {
+      pageButton.classList.add("active");
+    }
+    pageButton.onclick = () => changePage(i);
+    pagination.appendChild(pageButton);
+  }
+
+  if (currentPage < totalPages) {
+    const nextButton = document.createElement("button");
+    nextButton.innerText = "Next";
+    nextButton.onclick = () => changePage(currentPage + 1);
+    pagination.appendChild(nextButton);
+  }
+}
+
+function changePage(page) {
+  localStorage.setItem("currentPage", page);
+  currentPage = page;
+  renderData();
+}
