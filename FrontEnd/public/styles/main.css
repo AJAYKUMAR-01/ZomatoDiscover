@@ -1,11 +1,10 @@
-/* Global Styles */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body and Header Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
@@ -15,12 +14,12 @@ body {
 }
 
 h1 {
+    color: black;
     font-size: 2em;
     margin-bottom: 20px;
     text-align: center;
 }
 
-/* Restaurant List Styles */
 .restaurant-list {
     display: flex;
     flex-wrap: wrap;
@@ -30,7 +29,6 @@ h1 {
     margin-bottom: 40px;
 }
 
-/* Restaurant Card Styles */
 .restaurant-card {
     margin: 20px;
     margin-left: calc(30%);
@@ -46,6 +44,10 @@ h1 {
     justify-self: center;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-card h1{
+    color: brown;
 }
 
 .restaurant-card:hover {
@@ -74,10 +76,11 @@ h1 {
 }
 
 .card-details a button {
-    background-color: rgb(255, 180, 41);
+    font-size: smaller;
+    background-color: rgb(255, 70, 41);
     border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
+    border-radius: 5px;
+    padding: 8px 15px;
     font-size: 1em;
     color: white;
     margin-top: 20px;
@@ -86,10 +89,9 @@ h1 {
 }
 
 .card-details a button:hover {
-    background-color: rgb(255, 160, 0);
+    background-color: rgb(255, 115, 0);
 }
 
-/* Pagination Styles */
 .pagination {
     display: flex;
     justify-content: center;
@@ -99,7 +101,8 @@ h1 {
 }
 
 .pagination button {
-    background-color: rgb(255, 180, 41);
+    font-size: smaller;
+    background-color: rgb(255, 95, 41);
     border: none;
     border-radius: 5px;
     padding: 10px 15px;
@@ -114,8 +117,9 @@ h1 {
 }
 
 .pagination .active {
-    background-color: rgb(255, 140, 0);
-    color: white;
+
+    background-color: rgb(255, 234, 0);
+    color: black;
 }
 
 .restaurant-detail {
@@ -126,6 +130,10 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
+}
+
+.detail-h1{
+    color: brown;
 }
 
 .restaurant-info {
@@ -166,13 +174,14 @@ h1 {
 .view-zomato a button {
     
     cursor: pointer;
-    background-color: rgb(255, 180, 41);
+    background-color: rgb(255, 87, 41);
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     font-size: 18px;
     color: #fff;
     text-decoration: none;
+    font-size: smaller;
     transition: background-color 0.3s ease;
 }
 

@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return response.json();
       })
       .then((data) => {
+        console.log(data);
         const restaurantDetails = document.getElementById("restaurant-details");
         if (!data || !data.name) {
           restaurantDetails.innerHTML = "<p>Restaurant not found.</p>";
@@ -38,11 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="restaurant-info">
             <h1>${data.name}</h1>
-            <p><strong>Cuisines:</strong> ${data.cuisines}</p>
-            <p><strong>Rating:</strong> ${ratingText} (${aggregateRating})</p>
-            <p><strong>Votes:</strong> ${
-              data.user_rating ? data.user_rating.votes : "N/A"
-            }</p>
+            <p><strong>Cuisines :</strong> ${data.cuisines}</p>
+            <p><strong>Address :</strong> ${data.location_address}</p>
+            <p><strong>Average Cost for Two :</strong> ${data.average_cost_for_two}</p>
+            <p><strong>Rating :</strong> ${data.user_rating} [ ${data.rating_text} ]</p>
+            <p><strong>No. of People Rated :</strong> ${data.votes}</p>
+            <p><strong>Has Online Delivery :</strong> ${data.has_online_delivery == 1 ? "Yes" : "No"}</p>
             <div class="view-zomato">
             <p><a href="${
               data.url
@@ -73,7 +75,7 @@ function renderData() {
     })
     .then((data) => {
       const restaurantList = document.getElementById("restaurant-list");
-      restaurantList.innerHTML = "";
+      restaurantList.innerHTML = '';
 
       if (!data || !Array.isArray(data)) {
         console.error("Error: Invalid data format received from API");
@@ -89,8 +91,8 @@ function renderData() {
                     </div>
                     <div class="card-details">
                         <h1>${restaurant.name}</h1>
-                        <p>Rating: ${restaurant.user_rating}</p>
-                        <p>Cuisines: ${restaurant.cuisines}</p>
+                        <p><strong>Rating :</strong> ${restaurant.user_rating}</p>
+                        <p><strong>Cuisines :</strong> ${restaurant.cuisines}</p>
                         <a href="/details/?id=${restaurant.id}"><button>View Details</button></a>
                     </div>
                 `;
