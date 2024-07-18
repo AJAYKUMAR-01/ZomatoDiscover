@@ -62,12 +62,28 @@ app.get('/api/restaurants', (req, res) => {
   });
 });
 
+app.get('/api/random', (req, res) =>{
+  const query = 'SELECT * FROM restaurants ORDER BY RAND() LIMIT ?';
+  connection.query(query, [1], (err, results) => {
+    if (err) {
+      console.error('Error fetching restaurants: ', err);
+      res.status(500).json({ error: 'Error fetching restaurants' });
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
 app.get('/', (req, res) => {
   res.render('restaurant-list', { title: 'My App' });
 });
 
 app.get('/details/', (req, res) => {
-  res.render('restaurant-detail', {title: 'Restaurant'})
+  res.render('restaurant-detail', { title: 'Restaurant' })
+});
+
+app.get('/random', (req, res) => {
+  res.render('restaurant-random', { title: 'Random Restaurant' })
 });
 
 

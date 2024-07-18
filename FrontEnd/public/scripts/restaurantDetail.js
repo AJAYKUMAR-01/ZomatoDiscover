@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const restaurantId = urlParams.get("id");
-
   if (restaurantId) {
     fetch(`/api/restaurants/${restaurantId}`)
       .then((response) => {
@@ -42,7 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
             <p><strong>Cuisines :</strong> ${data.cuisines}</p>
             <p><strong>Address :</strong> ${data.location_address}</p>
             <p><strong>Average Cost for Two :</strong> ${data.average_cost_for_two}</p>
-            <p><strong>Rating :</strong> ${data.user_rating} [ ${data.rating_text} ]</p>
+            <p>
+              <strong>Rating :</strong>
+              <span style="background-color: #${data.rating_color}; color: white; border-radius: 3px; padding: 1px 7px 1px 4px;">&starf; ${data.user_rating} </span>  
+            </p>
             <p><strong>No. of People Rated :</strong> ${data.votes}</p>
             <p><strong>Has Online Delivery :</strong> ${data.has_online_delivery == 1 ? "Yes" : "No"}</p>
             <div class="view-zomato">
@@ -64,6 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderData();
 });
+
+
+
 
 function renderData() {
   fetch(`/api/restaurants/?page=${currentPage}`)
@@ -145,4 +150,59 @@ function changePage(page) {
   localStorage.setItem("currentPage", page);
   currentPage = page;
   renderData();
+
 }
+
+//-------------------------------------------------------------------------------------
+
+function RandomRestaurant(){
+  // console.log("Hello");
+  if (true) {
+    fetch(`/api/random`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // console.log(data);
+        const restaurantDetails = document.getElementById("random-restaurant");
+        if (!data || !data.name) {
+          restaurantDetails.innerHTML = "<p>Restaurant not found.</p>";
+          return;
+        }
+
+        restaurantDetails.innerHTML = `
+        <div class="random-restaurant-detail">
+        <div class="random-restaurant-image">
+            <img src="${data.featured_image}" alt="Restaurant Image">
+        </div>
+        <div class="random-restaurant-info">
+            <h1>${data.name}</h1>
+            <p><strong>Cuisines :</strong> ${data.cuisines}</p>
+            <p><strong>Address :</strong> ${data.location_address}</p>
+            <p><strong>Average Cost for Two :</strong> ${data.average_cost_for_two}</p>
+            <p>
+              <strong>Rating :</strong>
+              <span style="background-color: #${data.rating_color}; color: white; border-radius: 3px; padding: 1px 7px 1px 4px;">&starf; ${data.user_rating} </span>  
+            </p>
+            <p><strong>No. of People Rated :</strong> ${data.votes}</p>
+            <p><strong>Has Online Delivery :</strong> ${data.has_online_delivery == 1 ? "Yes" : "No"}</p>
+            <div class="view-zomato">
+            <p><a href="${
+              data.url
+            }" target="_blank"><button>View on Zomato</button></a></p>
+        </div>
+        </div>        
+        </div>
+            `;
+      })
+      .catch((error) => {
+        console.error("Error fetching restaurant details:", error);
+        const restaurantDetails = document.getElementById("restaurant-details");
+        restaurantDetails.innerHTML =
+          "<p>Error fetching restaurant details.</p>";
+      });
+  }
+};
