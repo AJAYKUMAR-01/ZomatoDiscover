@@ -1,4 +1,4 @@
-let currentPage = 1; // Default to page 1
+let currentPage = 1; 
 const totalPages = 100;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         const restaurantDetails = document.getElementById("restaurant-details");
         if (!data || !data.name) {
           restaurantDetails.innerHTML = "<p>Restaurant not found.</p>";
@@ -86,7 +86,6 @@ function renderData() {
         console.error("Error: Invalid data format received from API");
         return;
       }
-
       data.forEach((restaurant) => {
         const restaurantItem = document.createElement("div");
         restaurantItem.classList.add("restaurant-card");
@@ -107,6 +106,8 @@ function renderData() {
       renderPagination();
     })
     .catch((error) => console.error("Error fetching restaurant list:", error));
+
+  // RandomRestaurant();
 }
 
 function renderPagination() {

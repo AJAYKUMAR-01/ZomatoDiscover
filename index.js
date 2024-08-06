@@ -4,13 +4,12 @@ const mysql = require('mysql2');
 const { title } = require('process');
 const app = express();
 
+let Cache = [], sizeOfCache = 50;
 
 app.use(express.static(path.join(__dirname, 'FrontEnd', 'public')));
 
-
 app.set('views', path.join(__dirname, 'FrontEnd', 'views'));
 app.set('view engine', 'ejs');
-
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
@@ -18,7 +17,6 @@ const connection = mysql.createConnection({
   password: 'password',
   database: 'zomato_db'
 });
-
 
 connection.connect((err) => {
   if (err) {
@@ -28,11 +26,30 @@ connection.connect((err) => {
   console.log('Connected to MySQL database.');
 });
 
-
 app.get('/api/restaurants/:id', (req, res) => {
   const restaurantId = req.params.id;
-  const query = 'SELECT * FROM restaurants WHERE id = ?';
-  connection.query(query, [restaurantId], (err, results) => {
+  let Data;
+  let check = true;
+  Cache.forEach((restaurant) => {
+    if(restaurant.id == restaurantId)
+    {
+      // console.log("Found in Cache");
+      Data = restaurant;
+      res.json(Data);
+      check = false;
+    }
+  });
+
+  if(!check)
+  {
+    ChangeOrder(Data);
+  }
+
+  if(check)
+  {
+    console.log("Not found in Cache");
+    const query = 'SELECT * FROM restaurants WHERE id = ?';
+    connection.query(query, [restaurantId], (err, results) => {
     if (err) {
       console.error('Error fetching restaurant details: ', err);
       res.status(500).json({ error: 'Error fetching restaurant details' });
@@ -42,10 +59,18 @@ app.get('/api/restaurants/:id', (req, res) => {
       res.status(404).json({ error: 'Restaurant not found' });
       return;
     }
+    if(Cache.length >= sizeOfCache)
+    {
+      console.log(Cache[sizeOfCache - 1]);
+      Cache.pop();
+    } 
+    
+    ChangeOrder(results[0]);
     res.json(results[0]);
-  });
+    });
+  }
+  // console.log(Cache);
 });
-
 
 app.get('/api/restaurants', (req, res) => {
   const limit = 10; 
@@ -86,6 +111,18 @@ app.get('/random', (req, res) => {
   res.render('restaurant-random', { title: 'Random Restaurant' })
 });
 
+function ChangeOrder(Data)
+{
+  let temp = [];
+  temp.push(Data);
+  Cache.forEach((restaurant) => {
+      if(restaurant != Data)
+      {
+        temp.push(restaurant);
+      }
+  });
+    Cache = temp;
+}
 
 const port = 3009;
 app.listen(port, () => {

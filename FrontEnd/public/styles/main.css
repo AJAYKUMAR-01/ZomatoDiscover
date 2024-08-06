@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -15,20 +14,10 @@ body {
 
 h1 {
     font-family: cursive;
-    /* text-decoration: underline; */
     color: black;
     font-size: 5em;
     margin-bottom: 40px;
     text-align: center;
-}
-
-.restaurant-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 40px;
 }
 
 .restaurant-card {
@@ -45,7 +34,7 @@ h1 {
     align-items: center;
     justify-self: center;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .restaurant-card h1{
@@ -205,9 +194,6 @@ button {
     transition: background-color 0.3s ease;
 }
 
-
-/*  */
-
 .random-restaurant-detail {
     display: flex;
     align-items: center;
@@ -253,4 +239,3 @@ button {
 #random-button{
     color: black;
 }
-
